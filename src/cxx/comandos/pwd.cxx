@@ -26,14 +26,15 @@ void PWD::operator()(
 #if __cpp_lib_format >= 201907L
 	estado.controlSock.Send(
 		std::vformat(
-			GetReplyCode(257),
+			GetReply(257),
 			std::make_format_args(unmove(std::filesystem::current_path().string()))));
 #else
 	#if __cpp_lib_filesystem >= 201703L
-	estado.controlSock.Send(format(GetReplyCode(257), std::filesystem::current_path().string()));
+	estado.controlSock.Send(format(GetReply(257), std::filesystem::current_path().string()));
 	#else
 	std::unique_ptr<char[], decltype(&std::free)> cwd{get_current_dir_name(), std::free};
-	estado.controlSock.Send(format(GetReplyCode(257), std::string{cwd.get()}));
+	estado.controlSock.Send(format(GetReply(257), std::string{cwd.get()}));
 	#endif
 #endif
-}}
+}
+} // namespace ftp

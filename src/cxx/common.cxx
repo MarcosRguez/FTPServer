@@ -25,6 +25,9 @@ module;
 	#if __has_include(<iostream>)
 		#include <iostream>
 	#endif
+	#if __has_include(<print>)
+		#include <print>
+	#endif
 	#include <map>
 	#include <memory>
 	#include <filesystem>
@@ -38,7 +41,6 @@ module;
 	#include "../../build/include/mapa.hxx"
 #endif
 module ftp;
-import :mapas;
 import :socket;
 import :addrinfo;
 import :comando;
@@ -101,19 +103,74 @@ auto CrearMapaComandos() -> std::map<
 	std::string,
 #endif
 	std::unique_ptr<Comando>> {
-	decltype(CrearMapaComandos())	resultado;
+	decltype(CrearMapaComandos()) resultado;
 	mapa;
 	return resultado;
 }
 
 #undef mapa
 
-auto GetReplyCode(const int& num) -> std::string {
+constexpr auto GetReplyFMT(const int& code) ->
+#if __cpp_lib_string_view >= 201606L
+	std::string_view
+#else
+	std::string
+#endif
+{
+	switch (code) {
+		case 110: return "Restart marker reply.";
+		case 120: return "Service ready in n minutes.";
+		case 125: return "Data connection already open; transfer starting.";
+		case 150: return "File status okay; about to open data connection.";
+		case 200: return "Command okay.";
+		case 202: return "Command not implemented, superfluous at this site.";
+		case 211: return "System status, or system help reply.";
+		case 212: return "Directory status.";
+		case 213: return "{}";
+		case 214: return "Help message.";
+		case 215: return "{} system type.";
+		case 220: return "Service ready for new user.";
+		case 221: return "Service closing control connection.";
+		case 225: return "Data connection open; no transfer in progress.";
+		case 226: return "Closing data connection. Requested file action successful.";
+		case 227: return "Entering Passive Mode ({})";
+		case 229: return "Entering Extended Passive Mode (|||{}|)";
+		case 230: return "User logged in, proceed.";
+		case 231: return "User logged out; service terminated.";
+		case 232: return "Logout command noted, but no transfer in progress.";
+		case 250: return "Requested file action okay, completed.";
+		case 257: return "\"{}\"";
+		case 331: return "User name okay, need password.";
+		case 332: return "Need account for login.";
+		case 350: return "Requested file action pending further information.";
+		case 421: return "Service not available, closing control connection.";
+		case 425: return "Can't open data connection.";
+		case 426: return "Connection closed; transfer aborted.";
+		case 450: return "Requested file action not taken. File unavailable.";
+		case 451: return "Requested action aborted: local error in processing.";
+		case 452: return "Requested action not taken. Insufficient storage space in system.";
+		case 500: return "Syntax error, command unrecognized.";
+		case 501: return "Syntax error in parameters or arguments.";
+		case 502: return "Command not implemented.";
+		case 503: return "Bad sequence of commands.";
+		case 504: return "Command not implemented for that parameter.";
+		case 522: return "Network protocol not supported.";
+		case 530: return "Not logged in.";
+		case 532: return "Need account for storing files.";
+		case 550: return "Requested action not taken. File unavailable.";
+		case 551: return "Requested action aborted: page type unknown.";
+		case 552: return "Requested file action aborted: exceeded storage allocation.";
+		case 553: return "Requested action not taken. File name not allowed.";
+		default: throw std::out_of_range{"Código de respuesta FTP no reconocido: " + std::to_string(code)};
+	}
+}
+
+auto GetReply(const int& code) -> std::string {
 #if __cpp_lib_format >= 201907L
-	return std::format("{} {}\r\n", num, FTPReplyCodes.at(num));
+	return std::format("{} {}\r\n", code, GetReplyFMT(code));
 #else
 	std::stringstream ss;
-	ss << num << ' ' << FTPReplyCodes.at(num) << "\r\n";
+	ss << code << ' ' << GetReplyFMT(code) << "\r\n";
 	return ss.str();
 #endif
 }
@@ -130,7 +187,7 @@ void WaitForRequests(Socket&& sock) {
 	FTPEstado estado{std::move(sock), Socket{}, false, false};
 #endif
 	const auto mapa{CrearMapaComandos()};
-	estado.controlSock.Send(GetReplyCode(220));
+	estado.controlSock.Send(GetReply(220));
 	while (!estado.parar) {
 		const auto línea{estado.controlSock.Recv<std::string>()};
 		if (línea.empty()) { continue; }
@@ -176,10 +233,14 @@ void WaitForRequests(Socket&& sock) {
 		try {
 			(*mapa.at(comando))(estado, args);
 		} catch (const std::out_of_range& error) {
-			estado.controlSock.Send(GetReplyCode(500));
+			estado.controlSock.Send(GetReply(500));
 		}
 	}
+#if __cpp_lib_print >= 202207L
+	std::println(std::cout, "Cliente ha salido");
+#else
 	std::cout << "Cliente ha salido" << '\n';
+#endif
 }
 
 } // namespace ftp

@@ -82,13 +82,28 @@ auto CrearMapaComandos() -> std::map<
 #endif
 	std::unique_ptr<Comando>>;
 /**
+ * @brief Obtiene una cadena de formato de respuesta asociada al código
+ * @param code Código de respuesta FTP
+ * @return std::string_view o std::string dependiendo de la versión de la biblioteca estándar
+ */
+#if __has_cpp_attribute(nodiscard)
+[[nodiscard]]
+#endif
+constexpr auto GetReplyFMT(const int& code) ->
+#if __cpp_lib_string_view >= 201606L
+	std::string_view
+#else
+	std::string
+#endif
+	;
+/**
  * @brief
  * @return Obtiene una cadena de formato de respuesta asociada al código
  */
 #if __has_cpp_attribute(nodiscard)
 [[nodiscard]]
 #endif
-auto GetReplyCode(const int&) -> std::string;
+auto GetReply(const int& code) -> std::string;
 #if __has_cpp_attribute(nodiscard)
 [[nodiscard]]
 #endif

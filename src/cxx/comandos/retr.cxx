@@ -15,7 +15,6 @@ module;
 #include <string>
 #include <vector>
 module ftp;
-import :mapas;
 import :common;
 import :utilidades;
 import :estado;
@@ -29,22 +28,22 @@ void RETR::operator()(
 	[[maybe_unused]] const std::vector<std::string>& args) {
 	const auto archivo{CargarFichero<std::string>(args[0])};
 	if (estado.pasivo) {
-		estado.controlSock.Send(GetReplyCode(150));
+		estado.controlSock.Send(GetReply(150));
 		auto coso{estado.dataSock.Accept()};
 #if __cpp_lib_span >= 202002L
 		coso.Send(std::span{archivo});
 #else
 		coso.Send(archivo);
 #endif
-		estado.controlSock.Send(GetReplyCode(226));
+		estado.controlSock.Send(GetReply(226));
 	} else {
-		estado.controlSock.Send(GetReplyCode(125));
+		estado.controlSock.Send(GetReply(125));
 #if __cpp_lib_span >= 202002L
 		estado.dataSock.Send(std::span{archivo});
 #else
 		estado.dataSock.Send(archivo);
 #endif
-		estado.controlSock.Send(GetReplyCode(226));
+		estado.controlSock.Send(GetReply(226));
 		estado.dataSock.~Socket();
 	}
 }

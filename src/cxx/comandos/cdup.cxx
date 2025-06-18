@@ -29,12 +29,12 @@ void CDUP::operator()(
 	std::filesystem::current_path(std::filesystem::current_path().parent_path());
 #else
 	if (chdir("..") != 0) {
-		estado.controlSock.Send(GetReplyCode(550));
+		estado.controlSock.Send(GetReply(550));
 		std::perror("CDUP");
 		// throw std::runtime_error{std::strerror(errno)};
 	}
 #endif
-	estado.controlSock.Send(GetReplyCode(200));
+	estado.controlSock.Send(GetReply(200));
 }
 
 } // namespace ftp

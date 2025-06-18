@@ -61,5 +61,6 @@ void PORT::operator()(
 #endif
 	estado.dataSock = ConectarSocket(host, puerto);
 	estado.pasivo = false;
-	estado.controlSock.Send(GetReplyCode(200));
-}}
+	estado.controlSock.Send(GetReply(200));
+}
+} // namespace ftp

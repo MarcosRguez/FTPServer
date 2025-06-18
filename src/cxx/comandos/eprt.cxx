@@ -14,7 +14,6 @@ module;
 #include <filesystem>
 #include <string>
 module ftp;
-import :mapas;
 import :common;
 import :utilidades;
 
@@ -42,12 +41,12 @@ void EPRT::operator()(
 	const auto tcp_port{*it++};
 #endif
 	if (std::stoi(net_ptr.data()) != 1) {
-		estado.controlSock.Send(GetReplyCode(522));
+		estado.controlSock.Send(GetReply(522));
 		return;
 	}
 	estado.dataSock = ConectarSocket(net_addr, std::stoi(tcp_port.data()));
 	estado.pasivo = false;
-	estado.controlSock.Send(GetReplyCode(200));
+	estado.controlSock.Send(GetReply(200));
 }
 
 }

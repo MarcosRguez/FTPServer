@@ -16,7 +16,6 @@ module;
 #include <iostream>
 #include <netinet/in.h>
 module ftp;
-import :mapas;
 import :estado;
 import :common;
 import :utilidades;
@@ -42,9 +41,9 @@ void EPSV::operator()(
 	estado.dataSock.Listen(5);
 	estado.pasivo = true;
 #if __cpp_lib_format >= 201907L
-	estado.controlSock.Send(std::vformat(GetReplyCode(229), std::make_format_args(unmove(estado.dataSock.GetPort()))));
+	estado.controlSock.Send(std::vformat(GetReply(229), std::make_format_args(unmove(estado.dataSock.GetPort()))));
 #else
-	estado.controlSock.Send(format(GetReplyCode(229), std::to_string(ntohs(estado.dataSock.GetPort()))));
+	estado.controlSock.Send(format(GetReply(229), std::to_string(ntohs(estado.dataSock.GetPort()))));
 #endif
 }
 } // namespace ftp

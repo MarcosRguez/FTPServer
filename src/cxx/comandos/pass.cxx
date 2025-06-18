@@ -12,7 +12,6 @@ module;
 #include <string>
 #include <vector>
 module ftp;
-import :mapas;
 
 namespace ftp {
 
@@ -20,5 +19,6 @@ void PASS::operator()(
 	FTPEstado& estado,
 	[[maybe_unused]] const std::vector<std::string>& args) {
 	const auto contraseña{args.size() == 1 ? args[0] : ""};
-	estado.controlSock.Send(GetReplyCode(230));
-}}
+	estado.controlSock.Send(GetReply(230));
+}
+} // namespace ftp

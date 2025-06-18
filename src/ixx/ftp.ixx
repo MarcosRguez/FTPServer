@@ -14,7 +14,6 @@ export import :comando;
 export import :common;
 export import :estado;
 export import :server;
-export import :mapas;
 export import :socket;
 export import :utilidades;
 export import :comando.cdup;

@@ -17,7 +17,6 @@ module;
 #include <cstdio>
 #include <netinet/in.h>
 module ftp;
-import :mapas;
 import :estado;
 import :common;
 import :utilidades;
@@ -56,13 +55,13 @@ void PASV::operator()(
 			std::make_format_args(
 				unmove(puerto / 256),
 				unmove(puerto % 256))));
-	estado.controlSock.Send(std::vformat(GetReplyCode(227), std::make_format_args(resultado)));
+	estado.controlSock.Send(std::vformat(GetReply(227), std::make_format_args(resultado)));
 #else
 	resultado.push_back(',');
 	resultado.append(std::to_string(puerto / 256));
 	resultado.push_back(',');
 	resultado.append(std::to_string(puerto % 256));
-	estado.controlSock.Send(format(GetReplyCode(227), resultado));
+	estado.controlSock.Send(format(GetReply(227), resultado));
 #endif
 } // en c++14 y c++17 se produce en segfault al salir de esta función
 }

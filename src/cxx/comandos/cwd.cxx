@@ -26,11 +26,11 @@ void CWD::operator()(
 	std::filesystem::current_path(args[0]);
 #else
 	if (chdir(args.front().c_str()) != 0) {
-		estado.controlSock.Send(GetReplyCode(550));
+		estado.controlSock.Send(GetReply(550));
 		std::perror("CWD");
 		// throw std::runtime_error{std::strerror(errno)};
 	}
 #endif
-	estado.controlSock.Send(GetReplyCode(250));
+	estado.controlSock.Send(GetReply(250));
 }
 }

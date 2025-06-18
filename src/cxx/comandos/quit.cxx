@@ -20,5 +20,6 @@ void QUIT::operator()(
 	FTPEstado& estado,
 	[[maybe_unused]] const std::vector<std::string>& args) {
 	estado.parar = true;
-	estado.controlSock.Send(GetReplyCode(221));
-}}
+	estado.controlSock.Send(GetReply(221));
+}
+} // namespace ftp

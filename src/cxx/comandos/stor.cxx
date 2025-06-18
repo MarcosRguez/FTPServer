@@ -15,7 +15,6 @@ module;
 #include <stdexcept>
 #include <sys/socket.h>
 module ftp;
-import :mapas;
 import :estado;
 import :common;
 
@@ -26,17 +25,18 @@ void STOR::operator()(
 	[[maybe_unused]] const std::vector<std::string>& args) {
 	std::string archivo;
 	if (estado.pasivo) {
-		estado.controlSock.Send(GetReplyCode(150));
+		estado.controlSock.Send(GetReply(150));
 		auto coso{estado.dataSock.Accept()};
 		archivo = coso.Recv<std::string>(MSG_DONTWAIT);
-		estado.controlSock.Send(GetReplyCode(226));
+		estado.controlSock.Send(GetReply(226));
 	} else {
-		estado.controlSock.Send(GetReplyCode(125));
+		estado.controlSock.Send(GetReply(125));
 		archivo = estado.dataSock.Recv<std::string>(MSG_DONTWAIT);
-		estado.controlSock.Send(GetReplyCode(226));
+		estado.controlSock.Send(GetReply(226));
 		estado.dataSock.~Socket();
 	}
 	std::fstream fs{args[0], std::fstream::out};
 	if (!fs.is_open()) { throw std::runtime_error{"💽"}; }
 	fs << archivo;
-}}
+}
+} // namespace ftp

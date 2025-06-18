@@ -22,7 +22,7 @@ namespace ftp {
 void LIST::operator()(
 	FTPEstado& estado,
 	[[maybe_unused]] const std::vector<std::string>& args) {
-	estado.controlSock.Send(GetReplyCode(125));
+	estado.controlSock.Send(GetReply(125));
 	std::vector<std::string> lista;
 #if __cpp_lib_filesystem >= 201703L
 	for (const auto& i : std::filesystem::directory_iterator{std::filesystem::current_path()}) {
@@ -54,10 +54,11 @@ void LIST::operator()(
 	if (estado.pasivo) {
 		auto coso{estado.dataSock.Accept()};
 		coso.Send(resultado);
-		estado.controlSock.Send(GetReplyCode(226));
+		estado.controlSock.Send(GetReply(226));
 	} else {
 		estado.dataSock.Send(resultado);
-		estado.controlSock.Send(GetReplyCode(226));
+		estado.controlSock.Send(GetReply(226));
 		estado.dataSock.~Socket();
 	}
-}}
+}
+} // namespace ftp

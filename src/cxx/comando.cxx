@@ -12,14 +12,13 @@ module;
 #include <string>
 #include <vector>
 module ftp;
-import :mapas;
 
 namespace ftp {
 
 void Comando::operator()(
 	FTPEstado& estado,
 	[[maybe_unused]] const std::vector<std::string>& args) {
-	estado.controlSock.Send(GetReplyCode(202));
+	estado.controlSock.Send(GetReply(202));
 }
 
 } // namespace ftp

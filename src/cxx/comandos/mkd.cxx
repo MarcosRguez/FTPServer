@@ -28,13 +28,14 @@ void MKD::operator()(
 	std::filesystem::create_directory(dir);
 #else
 	if (std::system(std::string{"mkdir "s + args[0]}.c_str()) != 0) {
-		estado.controlSock.Send(GetReplyCode(550));
+		estado.controlSock.Send(GetReply(550));
 		throw std::runtime_error{"no se pudo"};
 	}
 #endif
 #if __cpp_lib_format >= 201907L
-	estado.controlSock.Send(std::vformat(GetReplyCode(257), std::make_format_args(dir)));
+	estado.controlSock.Send(std::vformat(GetReply(257), std::make_format_args(dir)));
 #else
-	estado.controlSock.Send(format(GetReplyCode(257), dir));
+	estado.controlSock.Send(format(GetReply(257), dir));
 #endif
-}}
+}
+} // namespace ftp
